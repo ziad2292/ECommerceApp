@@ -1,6 +1,8 @@
 ﻿using Domain._Common;
+using Domain.Validation;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -18,10 +20,15 @@ namespace Domain.Entities
         public OrderStatus? orderStatus { get; set; }
 
         public Guid paymentId { get; set; }
-        public Payment? payment { get; set; }  
+        public Payment? payment { get; set; }
 
+        [Range(0, int.MaxValue)]
         public decimal totalAmount { get; set; }
+
+        [PastDateValidator]
         public DateTime orderDate { get; set; }
+
+
 
         public ICollection<OrderItem> orderItems { get; set; } = new HashSet<OrderItem>();
 

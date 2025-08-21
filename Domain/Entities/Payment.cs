@@ -1,4 +1,5 @@
 ﻿using Domain._Common;
+using Domain.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace Domain.Entities
 
         public Decimal amount { get; set; }
 
+        [PastDateValidator]
         public DateTime paymentDate { get; set; }
 
         public int paymentStatusId { get; set; }

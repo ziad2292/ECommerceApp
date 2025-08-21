@@ -1,5 +1,6 @@
 ﻿using Domain._Common;
 using Domain.Enums;
+using Domain.Validation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -14,16 +15,19 @@ namespace Domain.Entities
     {
         public string? name { get; set; }
 
+        [EmailAddress]
         public string? email { get; set; }
-        public string? passwordHash { get; set; }
 
-        public string? role { get; set; }
+        public string? passwordHash { get; set; }
 
         public Gender? gender { get; set; }
 
+        [MinimumYearValidator]
         public DateTime birthDate { get; set; }
 
-        //Not mapped to the database, calculated property
+        [Phone]
+        public string? phone { get; set; }
+
         public int age
         {
             get
@@ -39,7 +43,6 @@ namespace Domain.Entities
             }
         }
 
-        public string? phone { get; set; }
 
 
     }
