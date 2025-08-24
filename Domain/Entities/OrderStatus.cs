@@ -10,5 +10,7 @@ namespace Domain.Entities
     public class OrderStatus : BaseEntity<int>
     {
         public required string Name { get; set; }
+
+        public ICollection<Order> Orders { get; set; } = new HashSet<Order>();
     }
 }

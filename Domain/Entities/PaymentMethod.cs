@@ -10,5 +10,7 @@ namespace Domain.Entities
     public class PaymentMethod : BaseEntity<int>
     {
         public required string Name { get; set; }
+
+        public ICollection<Payment> Payments { get; set; } = new HashSet<Payment>();
     }
 }

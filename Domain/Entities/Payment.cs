@@ -2,6 +2,7 @@
 using Domain.Validation;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,18 +11,21 @@ namespace Domain.Entities
 {
     public class Payment : BaseAuditableEntity<Guid>
     {
-        public Guid userID { get; set; }
-        public User? user { get; set; }
+        public Guid UserID { get; set; }
+        public User? User { get; set; }
 
-        public int paymentMethodId { get; set; }
-        public PaymentMethod? paymentMethod { get; set; }
+        public int PaymentMethodId { get; set; }
+        public PaymentMethod? PaymentMethod { get; set; }
 
-        public Decimal amount { get; set; }
+        [Range(0, int.MaxValue)]
+        public Decimal Amount { get; set; }
 
         [PastDateValidator]
-        public DateTime paymentDate { get; set; }
+        public DateTime PaymentDate { get; set; }
 
-        public int paymentStatusId { get; set; }
-        public PaymentStatus? paymentStatus { get; set; }
+        public int PaymentStatusId { get; set; }
+        public PaymentStatus? PaymentStatus { get; set; }
+
+       public Order? Order { get; set; }
     }
 }

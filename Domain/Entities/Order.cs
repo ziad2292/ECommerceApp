@@ -13,24 +13,24 @@ namespace Domain.Entities
     public class Order : BaseAuditableEntity<Guid>
     {
 
-        public Guid userId { get; set; }
-        public User? user { get; set; }
+        public Guid UserId { get; set; }
+        public User? User { get; set; }
 
-        public int orderStatusId { get; set; }
-        public OrderStatus? orderStatus { get; set; }
+        public int OrderStatusId { get; set; }
+        public OrderStatus? OrderStatus { get; set; }
 
-        public Guid paymentId { get; set; }
-        public Payment? payment { get; set; }
+        public Guid PaymentId { get; set; }
+        public Payment? Payment { get; set; }
 
         [Range(0, int.MaxValue)]
-        public decimal totalAmount { get; set; }
+        public decimal TotalAmount { get; set; }
 
         [PastDateValidator]
-        public DateTime orderDate { get; set; }
+        public DateTime OrderDate { get; set; }
 
 
 
-        public ICollection<OrderItem> orderItems { get; set; } = new HashSet<OrderItem>();
+        public ICollection<OrderItem> OrderItems { get; set; } = new HashSet<OrderItem>();
 
     }
 }

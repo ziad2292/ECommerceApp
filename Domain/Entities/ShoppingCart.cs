@@ -11,6 +11,6 @@ namespace Domain.Entities
     {
         public Guid UserId { get; set; }
         public User? User { get; set; }
-        public ICollection<ShoppingCartItem> items { get; set; } = new HashSet<ShoppingCartItem>();
+        public ICollection<ShoppingCartItem> Items { get; set; } = new HashSet<ShoppingCartItem>();
     }
 }

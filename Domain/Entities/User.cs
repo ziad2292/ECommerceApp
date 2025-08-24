@@ -13,37 +13,42 @@ namespace Domain.Entities
 {
     public class User : BaseAuditableEntity<Guid>
     {
-        public string? name { get; set; }
+        public string? Name { get; set; }
 
         [EmailAddress]
-        public string? email { get; set; }
+        public string? Email { get; set; }
 
-        public string? passwordHash { get; set; }
+        public string? PasswordHash { get; set; }
 
-        public Gender? gender { get; set; }
+        public Gender? Gender { get; set; }
 
         [MinimumYearValidator]
-        public DateTime birthDate { get; set; }
+        public DateTime BirthDate { get; set; }
 
         [Phone]
-        public string? phone { get; set; }
+        public string? Phone { get; set; }
 
-        public int age
+        [NotMapped]
+        public int Age
         {
             get
             {
                 var today = DateTime.Today;
-                var age = today.Year - birthDate.Year;
+                var age = today.Year - BirthDate.Year;
 
                 //Adjust if birthday hasn't occurred yet this year
-                if (birthDate.Date > today.AddYears(-age))
+                if (BirthDate.Date > today.AddYears(-age))
                     age--;
 
                 return age;
             }
         }
 
+        public ICollection<Order> Orders { get; set; } = new HashSet<Order>();
 
+        public ICollection<Payment> Payments { get; set; } = new HashSet<Payment>();
+
+        public ShoppingCart? ShoppingCart { get; set; }
 
     }
 }

@@ -9,6 +9,8 @@ namespace Domain.Entities
 {
     public class PaymentStatus : BaseEntity<int>
     {
-        public required string name { get; set; }
+        public required string Name { get; set; }
+
+        public ICollection<Payment> Payments { get; set; } = new HashSet<Payment>();
     }
 }

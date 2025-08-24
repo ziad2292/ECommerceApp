@@ -10,20 +10,24 @@ namespace Domain.Entities
 {
     public class Product : BaseAuditableEntity<Guid>
     {
-        public string? name { get; set; }
+        public string? Name { get; set; }
 
-        public string? description { get; set; }
+        public string? Description { get; set; }
 
         [Range(0, int.MaxValue)]
-        public decimal price { get; set; }
+        public decimal Price { get; set; }
 
         [Url]
-        public string? imageUrl { get; set; }
+        public string? ImageUrl { get; set; }
 
-        public int categoryId { get; set; }
-        public Category? category { get; set; }
+        public int CategoryId { get; set; }
+        public Category? Category { get; set; }
 
         [Range(0, int.MaxValue)]
-        public int stock { get; set; }
+        public int Stock { get; set; }
+
+        public ICollection<OrderItem> OrderItems { get; set; } = new HashSet<OrderItem>();
+
+        public ICollection<ShoppingCartItem> ShoppingCartItems { get; set; } = new HashSet<ShoppingCartItem>();
     }
 }
