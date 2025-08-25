@@ -25,6 +25,9 @@ namespace Infrastructure.Persistence._Data.Configurations
                 .WithMany(sc => sc.Items)
                 .HasForeignKey(sci => sci.ShoppingCartId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            //Composite Index(DB can use index on ShoppingCartId only or both of them together, but not ProductId only)
+            builder.HasIndex(sci => new { sci.ShoppingCartId, sci.ProductId});
         }
     }
 }

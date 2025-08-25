@@ -19,6 +19,8 @@ namespace Infrastructure.Persistence._Data.Configurations
             builder.Property(u => u.Email)
                 .HasMaxLength(100);
 
+            builder.HasAlternateKey(u => u.Email);
+
             builder.Property(u => u.Phone)
                 .HasMaxLength(15);
         }

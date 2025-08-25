@@ -24,6 +24,10 @@ namespace Infrastructure.Persistence._Data.Configurations
             builder.HasOne(p => p.PaymentStatus)
                 .WithMany(ps => ps.Payments)
                 .HasForeignKey(p => p.PaymentStatus);
+
+            builder.HasIndex(p => p.UserID);
+
+            builder.HasIndex(p => p.PaymentStatusId);
         }
     }
 }

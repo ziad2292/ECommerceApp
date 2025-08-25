@@ -19,6 +19,8 @@ namespace Infrastructure.Persistence._Data.Configurations
                    .HasForeignKey<ShoppingCart>(sc => sc.UserId)
                    .OnDelete(DeleteBehavior.Cascade)
                    .IsRequired();
+
+            builder.HasIndex(sc => sc.UserId);
         }
     }
 }

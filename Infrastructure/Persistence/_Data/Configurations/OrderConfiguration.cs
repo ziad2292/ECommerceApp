@@ -26,6 +26,8 @@ namespace Infrastructure.Persistence._Data.Configurations
                 .WithOne(p => p.Order)
                 .HasForeignKey<Order>(o => o.PaymentId);
 
+            builder.HasIndex(o => o.UserId);
+
         }
     }
 }

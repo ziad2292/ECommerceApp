@@ -2,7 +2,6 @@
 using Domain.Entities;
 using Infrastructure.Persistence._Data.Configurations._Base;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +24,10 @@ namespace Infrastructure.Persistence._Data.Configurations
             builder.HasOne(p => p.Category)
                 .WithMany(c => c.Products)
                 .HasForeignKey(p => p.CategoryId);
+
+            builder.HasIndex(p => p.CategoryId);
+
+            builder.HasIndex(p => p.Price);
         }
     }
 }

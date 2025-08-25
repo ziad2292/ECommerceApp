@@ -23,6 +23,8 @@ namespace Infrastructure.Persistence._Data.Configurations
                    .WithMany(Product => Product.OrderItems)
                    .HasForeignKey(OrderItem => OrderItem.ProductId)
                    .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(oi => oi.OrderId);
         }
     }
 }
