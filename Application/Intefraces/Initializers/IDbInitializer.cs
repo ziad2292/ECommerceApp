@@ -10,6 +10,5 @@ namespace Application.Intefraces.Initializers
     {
         Task InitializeDbAsync();
 
-        Task SeedAsync();
     }
 }

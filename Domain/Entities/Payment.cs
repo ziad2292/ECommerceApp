@@ -1,5 +1,6 @@
 ﻿using Domain._Common;
 using Domain.Validation;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -18,6 +19,7 @@ namespace Domain.Entities
         public PaymentMethod? PaymentMethod { get; set; }
 
         [Range(0, int.MaxValue)]
+        [Precision(18, 2)]
         public Decimal Amount { get; set; }
 
         [PastDateValidator]

@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Infrastructure.Persistence._Data.Configurations._Base;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,8 @@ namespace Infrastructure.Persistence._Data.Configurations
         {
             builder.HasOne(p => p.User)
                 .WithMany(u => u.Payments)
-                .HasForeignKey(p => p.UserID);
+                .HasForeignKey(p => p.UserID)
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(p => p.PaymentMethod)
                 .WithMany(pm => pm.Payments)
@@ -23,7 +25,7 @@ namespace Infrastructure.Persistence._Data.Configurations
 
             builder.HasOne(p => p.PaymentStatus)
                 .WithMany(ps => ps.Payments)
-                .HasForeignKey(p => p.PaymentStatus);
+                .HasForeignKey(p => p.PaymentStatusId);
 
             builder.HasIndex(p => p.UserID);
 

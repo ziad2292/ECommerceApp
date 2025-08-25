@@ -20,7 +20,7 @@ namespace Domain.Validation
             {
                 var user = (User)validationContext.ObjectInstance;
 
-                if (user.age < minimumAge)
+                if (user.Age < minimumAge)
                     return new ValidationResult(defaultErrorMessage);
             }
 

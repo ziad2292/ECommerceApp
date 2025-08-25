@@ -1,4 +1,6 @@
-﻿using Infrastructure.Persistence._Data;
+﻿using Application.Intefraces.Initializers;
+using Infrastructure.Persistence._Data;
+using Infrastructure.Persistence.Initializers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +19,8 @@ namespace Infrastructure
             services.AddDbContext<AppDbContext>(optionsBuilder =>
                 optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
             );
+
+            services.AddScoped<IDbInitializer, DBInitializer>();
 
             return services;
         }

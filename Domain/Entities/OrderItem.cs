@@ -1,4 +1,5 @@
 ﻿using Domain._Common;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -20,6 +21,7 @@ namespace Domain.Entities
         public int Quantity { get; set; }
 
         [Range(0, int.MaxValue)]
+        [Precision(18, 2)]
         public decimal Price { get; set; }
 
     }

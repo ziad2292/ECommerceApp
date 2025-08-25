@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Infrastructure.Persistence._Data.Configurations._Base;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,8 @@ namespace Infrastructure.Persistence._Data.Configurations
         {
             builder.HasOne(o => o.User)
                 .WithMany(u => u.Orders)
-                .HasForeignKey(o => o.UserId);
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(o => o.OrderStatus)
                 .WithMany(os => os.Orders)

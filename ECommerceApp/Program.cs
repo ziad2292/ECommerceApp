@@ -1,8 +1,14 @@
+using ECommerceApp.Extensions;
+using Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
+
+// Dependency Injection for Solution Layers
+builder.Services.AddInfrastructure(builder.Configuration);
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -16,8 +22,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseAuthorization();
+app.UseRouting();
 
 app.MapControllers();
+
+await app.InitializeDbAsync();
 
 app.Run();
