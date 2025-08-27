@@ -1,4 +1,5 @@
 ﻿using Domain._Common;
+using Domain.IdentityEntities;
 using Domain.Validation;
 using Microsoft.EntityFrameworkCore;
 using System;

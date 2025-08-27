@@ -5,28 +5,20 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Domain.Entities;
 
-namespace Domain.Entities
+namespace Domain.IdentityEntities
 {
-    public class User : BaseAuditableEntity<Guid>
+    public class User : IdentityUser<Guid>
     {
-        public string? Name { get; set; }
-
-        [EmailAddress]
-        public string? Email { get; set; }
-
-        public string? PasswordHash { get; set; }
-
         public Gender? Gender { get; set; }
 
         [MinimumYearValidator]
         public DateTime BirthDate { get; set; }
-
-        [Phone]
-        public string? Phone { get; set; }
 
         [NotMapped]
         public int Age

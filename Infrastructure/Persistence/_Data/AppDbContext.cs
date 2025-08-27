@@ -1,4 +1,7 @@
 ﻿using Domain.Entities;
+using Domain.IdentityEntities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
@@ -9,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Persistence._Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<User, Role, Guid>
     {
         public DbSet<Category> Categories { get; set; }
 
@@ -30,9 +33,6 @@ namespace Infrastructure.Persistence._Data
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
 
         public DbSet<ShoppingCartItem> ShoppingCartItems { get; set; }
-
-        public DbSet<User> Users { get; set; }
-
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
