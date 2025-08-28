@@ -16,7 +16,7 @@ namespace Domain.Validation
 
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
-            if(value is DateTime birthDate)
+            if(value is DateOnly birthDate)
             {
                 var user = (User)validationContext.ObjectInstance;
 

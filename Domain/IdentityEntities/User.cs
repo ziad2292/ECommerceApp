@@ -17,8 +17,7 @@ namespace Domain.IdentityEntities
     {
         public Gender? Gender { get; set; }
 
-        [MinimumYearValidator]
-        public DateTime BirthDate { get; set; }
+        public DateOnly BirthDate { get; set; }
 
         [NotMapped]
         public int Age
@@ -29,7 +28,7 @@ namespace Domain.IdentityEntities
                 var age = today.Year - BirthDate.Year;
 
                 //Adjust if birthday hasn't occurred yet this year
-                if (BirthDate.Date > today.AddYears(-age))
+                if (BirthDate.DayOfYear < today.DayOfYear)
                     age--;
 
                 return age;

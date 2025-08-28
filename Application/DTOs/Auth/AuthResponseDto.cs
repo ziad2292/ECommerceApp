@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Enums
+namespace Application.DTOs.Auth
 {
-    public enum Gender
+    public class AuthResponseDto
     {
-        Male = 1,
-        Female = 2
+        //TODO: Token and Refresh Token to be added
     }
 }
