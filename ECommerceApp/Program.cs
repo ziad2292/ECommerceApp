@@ -14,11 +14,21 @@ builder.Services.AddControllers();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 //Enable Identity
-builder.Services.AddIdentity<User, Role>()
+builder.Services.AddIdentity<User, Role>(options =>
+{
+    //Password Complexity Configuration
+    options.Password.RequiredLength = 6;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireDigit = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequiredUniqueChars = 1;
+})
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders()
     .AddUserStore<UserStore<User, Role, AppDbContext, Guid>>()
     .AddRoleStore<RoleStore<Role, AppDbContext, Guid>>();
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -33,9 +43,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseRouting();
-
-app.MapControllers();
+app.UseAuthentication(); //Reading Identity Cookie
+app.UseRouting(); //Identifying action method based on route
+app.MapControllers(); //Execute the filter pipeline (action + filters)
 
 await app.InitializeDbAsync();
 

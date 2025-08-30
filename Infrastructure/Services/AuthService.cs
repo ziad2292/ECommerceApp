@@ -15,20 +15,69 @@ namespace Infrastructure.Services
     public class AuthService : IAuthService
     {
         private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
 
-        public AuthService(UserManager<User> userManager)
+        public AuthService(UserManager<User> userManager, SignInManager<User> signInManager)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
         }   
 
-        public Task<ApiResponse<bool>> LoginAsync()
+        public async Task<ApiResponse> LoginAsync(LoginRequestDto loginRequestDto)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByEmailAsync(loginRequestDto.Email);
+
+            if(user == null)
+                return new ApiResponse
+                {
+                    IsSuccess = false,
+                    Message = "Email not found"
+                };
+
+            var result = await _signInManager.CheckPasswordSignInAsync(user, loginRequestDto.Password, lockoutOnFailure: false);
+
+            if(result.IsNotAllowed)
+                return new ApiResponse
+                {
+                    IsSuccess = false,
+                    Message = "Account is not allowed"
+                };
+
+            if(result.IsLockedOut)
+                return new ApiResponse
+                {
+                    IsSuccess = false,
+                    Message = "Account is locked out"
+                };
+
+            if(!result.Succeeded)
+                return new ApiResponse
+                {
+                    IsSuccess = false,
+                    Message = "Invalid credentials"
+                };
+
+            //TODO: Check for user role
+
+            //TODO: Generate JWT Token
+
+            //TODO: Initialize AuthResponseDto
+            var response = new AuthResponseDto();
+
+            return new ApiResponse<AuthResponseDto>
+            {
+                IsSuccess = true,
+                Message = "Login successful",
+                Data = response
+            };
+
         }
 
-        public Task LogoutAsync()
+        public async Task LogoutAsync()
         {
-            throw new NotImplementedException();
+            //TODO: Revoke refresh token
+
+            await _signInManager.SignOutAsync();
         }
 
         public async Task<ApiResponse> RegisterAsync(RegisterRequestDto registerDto)
@@ -65,6 +114,10 @@ namespace Infrastructure.Services
             }
 
             //TODO: Add role to user
+
+
+            //Sign in
+            await _signInManager.SignInAsync(user, isPersistent: false); //isPersistent: persist the authentication cookie in the browser even after closing the browser
 
             return new ApiResponse
             {

@@ -13,7 +13,7 @@ namespace Application.IServices
         //TODO: Modify return types and parameters
         Task<ApiResponse> RegisterAsync(RegisterRequestDto requestDto);
 
-        Task<ApiResponse<bool>> LoginAsync();
+        Task<ApiResponse> LoginAsync(LoginRequestDto loginRequestDto);
 
         Task LogoutAsync();
     }

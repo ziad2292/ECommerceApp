@@ -19,9 +19,11 @@ namespace Application.DTOs.Auth
         public required string Email { get; set; }
 
         [Required]
-        [RegularExpression(@"(?=^.{6,20}$)(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#%^&*()_+}{"":;'?/>\.<,])(?!.*\s).*$",
-            ErrorMessage = "Password must be 6-20 characters and include 1 uppercase, 1 lowercase, 1 number, and 1 special character.")]
         public required string Password { get; set; }
+
+        [Required]
+        [Compare("Password")]
+        public required string ConfirmPassword { get; set; }
 
         [Required]
         [Phone]
