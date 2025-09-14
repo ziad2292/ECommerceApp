@@ -71,12 +71,7 @@ namespace ECommerceApp.Controllers
                     Message = "Invalid Client Request"
                 };
 
-            string? jwtToken = tokenDto.AccessToken;
-            string? refreshToken = tokenDto.RefreshToken;
-
-            ClaimsPrincipal? principal = _tokenService.GetUserInfoFromExpiredToken(jwtToken);
-            if(principal)
-
+            return await _tokenService.RefreshExpiredToken(tokenDto);
         }
 
 
