@@ -11,28 +11,30 @@ namespace Application.DTOs.Auth
 {
     public class RegisterRequestDto
     {
-        [Required]
+        [Required(ErrorMessage = "Username can't be blank.")]
         public required string UserName { get; set; }
 
-        [Required]
-        [EmailAddress]
+        [Required(ErrorMessage = "Email can't be blank.")]
+        [EmailAddress(ErrorMessage = "Email should be in a proper format.")]
         public required string Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Password can't be blank.")]
+        [RegularExpression(@"(?=^.{6,20}$)(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#%^&*()_+}{"":;'?/>\.<,])(?!.*\s).*$",
+            ErrorMessage = "Password must be 6-20 characters and include 1 uppercase, 1 lowercase, 1 number, and 1 special character.")]
         public required string Password { get; set; }
 
-        [Required]
-        [Compare("Password")]
+        [Required(ErrorMessage = "Password can't be blank.")]
+        [Compare("Password", ErrorMessage = "Passwords don't match.")]
         public required string ConfirmPassword { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Phone Number can't be blank.")]
         [Phone]
         public required string PhoneNumber { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Choose a gender.")]
         public required int gender { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Select a Birthdate.")]
         [MinimumYearValidator]
         public required DateOnly BirthDate { get; set; }
 

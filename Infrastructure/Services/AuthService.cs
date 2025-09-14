@@ -1,9 +1,11 @@
 ﻿using Application.DTOs._Common;
 using Application.DTOs.Auth;
-using Application.IServices;
+using Application.Intefraces.IServices;
+using Application.Settings;
 using Domain.Enums;
 using Domain.IdentityEntities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,12 +18,16 @@ namespace Infrastructure.Services
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly RoleManager<Role> _roleManager;
+        private readonly ITokenService _tokenService;
 
-        public AuthService(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AuthService(UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<Role> roleManager, ITokenService tokenService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-        }   
+            _roleManager = roleManager;
+            _tokenService = tokenService;
+        }
 
         public async Task<ApiResponse> LoginAsync(LoginRequestDto loginRequestDto)
         {
@@ -34,9 +40,9 @@ namespace Infrastructure.Services
                     Message = "Email not found"
                 };
 
-            var result = await _signInManager.CheckPasswordSignInAsync(user, loginRequestDto.Password, lockoutOnFailure: false);
+            var result = await _signInManager.CheckPasswordSignInAsync(user, loginRequestDto.Password, lockoutOnFailure: false); //lockoutOnFailure: if true, increments the access failed count for the user if the sign-in fails.
 
-            if(result.IsNotAllowed)
+            if (result.IsNotAllowed)
                 return new ApiResponse
                 {
                     IsSuccess = false,
@@ -59,10 +65,13 @@ namespace Infrastructure.Services
 
             //TODO: Check for user role
 
-            //TODO: Generate JWT Token
+            //TODO: Check role parameter
+            AuthResponseDto response = _tokenService.GenerateToken(user, "User", null);
 
-            //TODO: Initialize AuthResponseDto
-            var response = new AuthResponseDto();
+            user.RefreshToken = response.RefreshToken;
+            user.RefreshTokenExpiryTime = response.RefreshTokenExpirationDateTime;
+            await _userManager.UpdateAsync(user);
+
 
             return new ApiResponse<AuthResponseDto>
             {
@@ -107,7 +116,7 @@ namespace Infrastructure.Services
             {
                 return new ApiResponse<IEnumerable<IdentityError>>
                 {
-                    IsSuccess = false,
+                    IsSuccess = false, 
                     Message = "Registration failed",
                     Data = result.Errors
                 };
@@ -115,9 +124,6 @@ namespace Infrastructure.Services
 
             //TODO: Add role to user
 
-
-            //Sign in
-            await _signInManager.SignInAsync(user, isPersistent: false); //isPersistent: persist the authentication cookie in the browser even after closing the browser
 
             return new ApiResponse
             {

@@ -1,6 +1,8 @@
 ﻿using Application.Intefraces.Initializers;
+using Application.Intefraces.IServices;
 using Infrastructure.Persistence._Data;
 using Infrastructure.Persistence.Initializers;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +23,8 @@ namespace Infrastructure
             );
 
             services.AddScoped<IDbInitializer, DBInitializer>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ITokenService, TokenService>();
 
             return services;
         }

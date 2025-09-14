@@ -14,7 +14,7 @@ namespace Domain.Validation
         {
             if (value is DateTime date)
             {
-                if (date >= DateTime.Now)
+                if (date >= DateTime.UtcNow)
                 {
                     return new ValidationResult(defaultErrorMessage);
                 }

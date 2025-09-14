@@ -19,6 +19,9 @@ namespace Domain.IdentityEntities
 
         public DateOnly BirthDate { get; set; }
 
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpiryTime { get; set; }
+
         [NotMapped]
         public int Age
         {

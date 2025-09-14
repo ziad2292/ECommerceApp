@@ -9,11 +9,11 @@ namespace Application.DTOs.Auth
 {
     public class LoginRequestDto
     {
-        [Required]
-        [EmailAddress]
+        [Required(ErrorMessage = "Email can't be blank.")]
+        [EmailAddress(ErrorMessage = "Email should be in a proper format.")]
         public required string Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Password can't be blank.")]
         public required string Password { get; set; }
     }
 }

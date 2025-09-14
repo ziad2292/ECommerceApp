@@ -8,6 +8,8 @@ namespace Application.DTOs.Auth
 {
     public class AuthResponseDto
     {
-        //TODO: Token and Refresh Token to be added
+        public required string AccessToken {  get; set; } 
+        public required string RefreshToken { get; set; }   
+        public required DateTime RefreshTokenExpirationDateTime { get; set; }
     }
 }
