@@ -12,6 +12,7 @@ namespace ECommerceApp.Extensions
                 try
                 {
                     await dbInitializer.InitializeDbAsync();
+                    await dbInitializer.SeedAsync();
                 }
                 catch (Exception){
 

@@ -4,10 +4,12 @@ using Application.Intefraces.IServices;
 using Application.Settings;
 using Domain.Enums;
 using Domain.IdentityEntities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,13 +22,15 @@ namespace Infrastructure.Services
         private readonly SignInManager<User> _signInManager;
         private readonly RoleManager<Role> _roleManager;
         private readonly ITokenService _tokenService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AuthService(UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<Role> roleManager, ITokenService tokenService)
+        public AuthService(UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<Role> roleManager, ITokenService tokenService, IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _tokenService = tokenService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<ApiResponse> LoginAsync(LoginRequestDto loginRequestDto)
@@ -63,10 +67,16 @@ namespace Infrastructure.Services
                     Message = "Invalid credentials"
                 };
 
-            //TODO: Check for user role
+            var roles = await _userManager.GetRolesAsync(user);
+            var role = roles.FirstOrDefault();
+            if(role == null)
+                return new ApiResponse
+                {
+                    IsSuccess = false,
+                    Message = "User has no role assigned"
+                };
 
-            //TODO: Check role parameter
-            AuthResponseDto response = _tokenService.GenerateToken(user, "User", null);
+            AuthResponseDto response = _tokenService.GenerateToken(user, role, null);
 
             user.RefreshToken = response.RefreshToken;
             user.RefreshTokenExpiryTime = response.RefreshTokenExpirationDateTime;
@@ -84,8 +94,13 @@ namespace Infrastructure.Services
 
         public async Task LogoutAsync()
         {
-            //TODO: Revoke refresh token
+            var userId = _httpContextAccessor.HttpContext?.User?.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
 
+            if(userId is null)
+                throw new UnauthorizedAccessException("User is not logged in");
+
+            var user = await _userManager.FindByIdAsync(userId);
+            user!.IsRevoked = true;
             await _signInManager.SignOutAsync();
         }
 
@@ -122,7 +137,9 @@ namespace Infrastructure.Services
                 };
             }
 
-            //TODO: Add role to user
+            //Assign Role to the user
+            if (registerDto.Role is not null)
+                await _userManager.AddToRoleAsync(user, registerDto.Role.ToString()!);
 
 
             return new ApiResponse

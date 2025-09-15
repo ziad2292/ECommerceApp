@@ -21,6 +21,7 @@ namespace Domain.IdentityEntities
 
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpiryTime { get; set; }
+        public bool IsRevoked { get; set; } = false;
 
         [NotMapped]
         public int Age
