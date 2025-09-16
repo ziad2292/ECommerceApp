@@ -38,9 +38,8 @@ namespace Infrastructure.Services
 
             //User Claims
             Claim[] claims = new Claim[] {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()), //Issued At - TODO: Check if working (else use: ~UtcNow.ToUnixTimeSeconds()~)
-                new Claim(ClaimTypes.NameIdentifier, user.UserName!),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Iat, new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64), //Issued At - TODO: Check if working (else use: ~UtcNow.ToUnixTimeSeconds()~)
                 new Claim(ClaimTypes.Email, user.Email!),
                 new Claim(ClaimTypes.Role, role),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) //JWT Unique ID
@@ -113,7 +112,7 @@ namespace Infrastructure.Services
             }
 
             //Get userId from extracted claims
-            var userId = principal.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+            var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId == null)
             {
                 return new ApiResponse

@@ -1,6 +1,5 @@
 ﻿using Domain._Common;
 using Domain.IdentityEntities;
-using Domain.Validation;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -23,7 +22,6 @@ namespace Domain.Entities
         [Precision(18, 2)]
         public Decimal Amount { get; set; }
 
-        [PastDateValidator]
         public DateTime PaymentDate { get; set; }
 
         public int PaymentStatusId { get; set; }

@@ -1,4 +1,5 @@
-﻿using Domain.IdentityEntities;
+﻿using Application.DTOs.Auth;
+using Domain.IdentityEntities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -10,7 +11,7 @@ namespace Domain.Validation
 {
     public class MinimumYearValidatorAttribute : ValidationAttribute
     {
-        public int minimumAge = 18;
+        public int minimumYear = 18;
 
         public string defaultErrorMessage { get; set; } = "User must be 18 years old or above";
 
@@ -18,9 +19,16 @@ namespace Domain.Validation
         {
             if(value is DateOnly birthDate)
             {
-                var user = (User)validationContext.ObjectInstance;
+                var dto = (RegisterRequestDto)validationContext.ObjectInstance;
 
-                if (user.Age < minimumAge)
+                var today = DateTime.Today;
+                var age = today.Year - dto.BirthDate.Year;
+
+                //Adjust if birthday hasn't occurred yet this year
+                if (dto.BirthDate.DayOfYear < today.DayOfYear)
+                    age--;
+
+                if (age < minimumYear)
                     return new ValidationResult(defaultErrorMessage);
             }
 

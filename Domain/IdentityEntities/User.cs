@@ -1,6 +1,5 @@
 ﻿using Domain._Common;
 using Domain.Enums;
-using Domain.Validation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
