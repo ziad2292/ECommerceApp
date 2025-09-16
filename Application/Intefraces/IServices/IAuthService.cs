@@ -10,7 +10,6 @@ namespace Application.Intefraces.IServices
 {
     public interface IAuthService
     {
-        //TODO: Modify return types and parameters
         Task<ApiResponse> RegisterAsync(RegisterRequestDto requestDto);
 
         Task<ApiResponse> LoginAsync(LoginRequestDto loginRequestDto);

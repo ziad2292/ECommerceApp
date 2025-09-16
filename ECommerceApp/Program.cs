@@ -95,6 +95,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseHsts(); //Forces the browser to use HTTPS for all requests and responses
+app.UseHttpsRedirection();
+
 //Order matters
 app.UseRouting(); //Identifying action method based on route
 app.UseAuthentication(); //Enable Authentication Middleware

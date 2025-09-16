@@ -42,6 +42,7 @@ namespace Infrastructure.Services
                 new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()), //Issued At - TODO: Check if working (else use: ~UtcNow.ToUnixTimeSeconds()~)
                 new Claim(ClaimTypes.NameIdentifier, user.UserName!),
                 new Claim(ClaimTypes.Email, user.Email!),
+                new Claim(ClaimTypes.Role, role),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) //JWT Unique ID
             };
 
@@ -133,10 +134,17 @@ namespace Infrastructure.Services
                 };
             }
 
-            //TODO: Check user role
+            var role = principal?.FindFirst(ClaimTypes.Role)?.Value;
+            if (role == null)
+            {
+                return new ApiResponse<AuthResponseDto>
+                {
+                    Message = "User role not found in the token claims",
+                    IsSuccess = false,
+                };
+            }
 
-
-            AuthResponseDto response = GenerateToken(user, "User", token.RefreshToken); //TODO: Pass role
+            AuthResponseDto response = GenerateToken(user, role.ToString(), token.RefreshToken);
             user.RefreshToken = response.RefreshToken;
             user.RefreshTokenExpiryTime = response.RefreshTokenExpirationDateTime;
             await _userManager.UpdateAsync(user);

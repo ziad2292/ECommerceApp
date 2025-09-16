@@ -140,13 +140,21 @@ namespace Infrastructure.Services
             //Assign Role to the user
             if (registerDto.Role is not null)
                 await _userManager.AddToRoleAsync(user, registerDto.Role.ToString()!);
-
-
-            return new ApiResponse
+            else
             {
-                IsSuccess = true,
-                Message = "Registration successful"
-            };
+                return new ApiResponse
+                {
+                    IsSuccess = false,
+                    Message = "Role is required"
+                };
+            }
+
+
+                return new ApiResponse
+                {
+                    IsSuccess = true,
+                    Message = "Registration successful"
+                };
         } 
     }
 }
