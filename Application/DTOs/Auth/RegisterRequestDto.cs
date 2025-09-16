@@ -38,7 +38,7 @@ namespace Application.DTOs.Auth
         [MinimumYearValidator]
         public required DateOnly BirthDate { get; set; }
 
-        public UserTypeEnum? Role{ get; set; }
+        public required UserTypeEnum Role{ get; set; }
 
 
     }

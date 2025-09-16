@@ -4,6 +4,7 @@ using Application.Intefraces.IServices;
 using Domain.IdentityEntities;
 using ECommerceApp.Controllers._Common;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -23,67 +24,96 @@ namespace ECommerceApp.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ApiResponse> Register([FromBody]RegisterRequestDto registerRequestDto)
+        public async Task<IActionResult> Register([FromBody]RegisterRequestDto registerRequestDto)
         {
             //Model binding Vaidation
             if(ModelState.IsValid == false)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-                return new ApiResponse<IEnumerable<string>>
+                return BadRequest(new ApiResponse<IEnumerable<string>>
                 {
                     IsSuccess = false,
                     Message = "Validation errors occurred.",
                     Data = errors
-                };
+                });
             }
 
             var response = await _authService.RegisterAsync(registerRequestDto);
-            return response;
+
+            if (response.IsSuccess)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return response.Message switch
+                {
+                    "The Email is already registered" => Conflict(response),
+                    "Registration failed" => Unauthorized(response),
+                    _ => BadRequest(response)
+                };
+            }
 
 
         }
 
         [HttpPost("login")]
-        public async Task<ApiResponse> Login([FromBody] LoginRequestDto loginRequestDto)
+        public async Task<IActionResult> Login([FromBody] LoginRequestDto loginRequestDto)
         {
             //Model binding Vaidation
             if (ModelState.IsValid == false)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-                return new ApiResponse<IEnumerable<string>>
+                return BadRequest(new ApiResponse<IEnumerable<string>>
                 {
                     IsSuccess = false,
                     Message = "Validation errors occurred.",
                     Data = errors
-                };
+                });
             }
             var response = await _authService.LoginAsync(loginRequestDto);
-            return response;
+            if (response.IsSuccess)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return Unauthorized(response);
+            }
         }
 
         [HttpPost("generate")]
-        public async Task<ApiResponse> GenerateNewAccessToken(TokenDto tokenDto)
+        public async Task<IActionResult> GenerateNewAccessToken(TokenDto tokenDto)
         {
             if (tokenDto == null)
-                return new ApiResponse
+                return BadRequest(new ApiResponse
                 {
                     IsSuccess = false,
                     Message = "Invalid Client Request"
-                };
+                });
 
-            return await _tokenService.RefreshExpiredToken(tokenDto);
+            var response = await _tokenService.RefreshExpiredToken(tokenDto);
+            
+            if(response.IsSuccess)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return Unauthorized(response);
+            }
         }
 
 
         [HttpPost("logout")]
-        public async Task<ApiResponse> Logout()
+        public async Task<IActionResult> Logout()
         {
             await _authService.LogoutAsync();
-            return new ApiResponse
+            return Ok(new ApiResponse
             {
                 IsSuccess = true,
                 Message = "Logout successful"
-            };
+            });
         }
     }
 }
