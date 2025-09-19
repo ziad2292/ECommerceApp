@@ -32,14 +32,11 @@ namespace Application.DTOs.Auth
         public required string PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Choose a gender.")]
-        public required int gender { get; set; }
+        public required Gender gender { get; set; }
 
         [Required(ErrorMessage = "Select a Birthdate.")]
         [MinimumYearValidator]
         public required DateOnly BirthDate { get; set; }
-
-        public required UserTypeEnum Role{ get; set; }
-
 
     }
 }

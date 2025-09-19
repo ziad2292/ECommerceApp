@@ -1,6 +1,7 @@
 ﻿using Application.DTOs._Common;
 using Application.DTOs.Auth;
 using Application.Intefraces.IServices;
+using Domain.Enums;
 using Domain.IdentityEntities;
 using ECommerceApp.Controllers._Common;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +12,7 @@ using System.Security.Claims;
 
 namespace ECommerceApp.Controllers
 {
-    [AllowAnonymous]
+    
     public class AuthController : CustomControllerBase
     {
         private readonly IAuthService _authService;
@@ -23,8 +24,9 @@ namespace ECommerceApp.Controllers
             _tokenService = tokenService;
         }
 
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody]RegisterRequestDto registerRequestDto)
+        [AllowAnonymous]
+        [HttpPost("register-user")]
+        public async Task<IActionResult> RegisterUser([FromBody]RegisterRequestDto registerRequestDto)
         {
             //Model binding Vaidation
             if(ModelState.IsValid == false)
@@ -38,7 +40,7 @@ namespace ECommerceApp.Controllers
                 });
             }
 
-            var response = await _authService.RegisterAsync(registerRequestDto);
+            var response = await _authService.RegisterAsync(registerRequestDto, UserTypeEnum.User);
 
             if (response.IsSuccess)
             {
@@ -54,9 +56,43 @@ namespace ECommerceApp.Controllers
                 };
             }
 
+        }
+
+        [AllowAnonymous]
+        [HttpPost("register-admin")]
+        public async Task<IActionResult> RegisterAdmin([FromBody] RegisterRequestDto registerRequestDto)
+        {
+            //Model binding Vaidation
+            if (ModelState.IsValid == false)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                return BadRequest(new ApiResponse<IEnumerable<string>>
+                {
+                    IsSuccess = false,
+                    Message = "Validation errors occurred.",
+                    Data = errors
+                });
+            }
+
+            var response = await _authService.RegisterAsync(registerRequestDto, UserTypeEnum.Admin);
+
+            if (response.IsSuccess)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return response.Message switch
+                {
+                    "The Email is already registered" => Conflict(response),
+                    "Registration failed" => Unauthorized(response),
+                    _ => BadRequest(response)
+                };
+            }
 
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto loginRequestDto)
         {
@@ -82,6 +118,7 @@ namespace ECommerceApp.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("generate")]
         public async Task<IActionResult> GenerateNewAccessToken(TokenDto tokenDto)
         {
@@ -104,7 +141,7 @@ namespace ECommerceApp.Controllers
             }
         }
 
-
+        [Authorize]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {

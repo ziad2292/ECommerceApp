@@ -105,7 +105,7 @@ namespace Infrastructure.Services
             await _signInManager.SignOutAsync();
         }
 
-        public async Task<ApiResponse> RegisterAsync(RegisterRequestDto registerDto)
+        public async Task<ApiResponse> RegisterAsync(RegisterRequestDto registerDto, UserTypeEnum userType)
         {
             var existingUser = await _userManager.FindByEmailAsync(registerDto.Email);
             if (existingUser != null)
@@ -139,7 +139,7 @@ namespace Infrastructure.Services
             }
 
             //Assign Role to the user
-            await _userManager.AddToRoleAsync(user, registerDto.Role.ToString()!);
+            await _userManager.AddToRoleAsync(user, userType.ToString());
           
             return new ApiResponse
             {

@@ -14,7 +14,7 @@ namespace Domain.IdentityEntities
 {
     public class User : IdentityUser<Guid>
     {
-        public Gender? Gender { get; set; }
+        public Gender Gender { get; set; }
 
         public DateOnly BirthDate { get; set; }
 

@@ -17,22 +17,35 @@ namespace Domain.Validation
 
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
-            if(value is DateOnly birthDate)
+
+                var BirthDateProp = validationContext.ObjectType.GetProperty("BirthDate");
+            if (BirthDateProp != null)
             {
-                var dto = (RegisterRequestDto)validationContext.ObjectInstance;
+                var BirthDate = BirthDateProp.GetValue(validationContext.ObjectInstance);
 
-                var today = DateTime.Today;
-                var age = today.Year - dto.BirthDate.Year;
+                if (BirthDate is DateOnly birthDate)
+                {
+                    var today = DateTime.Today;
+                    var age = today.Year - birthDate.Year;
 
-                //Adjust if birthday hasn't occurred yet this year
-                if (dto.BirthDate.DayOfYear < today.DayOfYear)
-                    age--;
+                    //Adjust if birthday hasn't occurred yet this year
+                    if (birthDate.DayOfYear < today.DayOfYear)
+                        age--;
 
-                if (age < minimumYear)
-                    return new ValidationResult(defaultErrorMessage);
+                    if (age < minimumYear)
+                        return new ValidationResult(defaultErrorMessage);
+                }
+
+
+
+                return ValidationResult.Success;
+            }
+            else
+            {
+                throw new Exception();
             }
 
-            return ValidationResult.Success;
+
         }
     }
 }

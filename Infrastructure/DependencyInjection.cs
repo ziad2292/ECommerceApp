@@ -25,6 +25,7 @@ namespace Infrastructure
             services.AddScoped<IDbInitializer, DBInitializer>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IAccountService, AccountService>();
 
             return services;
         }

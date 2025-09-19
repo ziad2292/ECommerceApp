@@ -1,5 +1,6 @@
 ﻿using Application.DTOs._Common;
 using Application.DTOs.Auth;
+using Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace Application.Intefraces.IServices
 {
     public interface IAuthService
     {
-        Task<ApiResponse> RegisterAsync(RegisterRequestDto requestDto);
+        Task<ApiResponse> RegisterAsync(RegisterRequestDto requestDto, UserTypeEnum userType);
 
         Task<ApiResponse> LoginAsync(LoginRequestDto loginRequestDto);
 
