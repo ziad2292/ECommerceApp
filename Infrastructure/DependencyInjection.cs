@@ -1,4 +1,5 @@
-﻿using Application.Intefraces.Initializers;
+﻿using Application.Intefraces._Common;
+using Application.Intefraces.Initializers;
 using Application.Intefraces.IServices;
 using Infrastructure.Persistence._Data;
 using Infrastructure.Persistence.Initializers;
@@ -26,6 +27,7 @@ namespace Infrastructure
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services;
         }
