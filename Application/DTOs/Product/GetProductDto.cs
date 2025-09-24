@@ -11,14 +11,18 @@ namespace Application.DTOs.Product
 {
     public class GetProductDto
     {
-        public required string? Name { get; set; }
+        public required string Name { get; set; }
+
+        public required string Description { get; set; }
 
         [Range(0, int.MaxValue)]
         [Precision(18, 2)]
         public required decimal Price { get; set; }
 
         [Url]
-        public required string? ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
+
+        public required int CategoryId { get; set; }
 
         [Range(0, int.MaxValue)]
         public required int Stock { get; set; }

@@ -24,7 +24,7 @@ namespace Infrastructure.Repositories
             return await _context.Products.Where(p => p.CategoryId == categoryId).ToListAsync();
         }
 
-        public Task<List<Product>> GetProductsByName(string name)
+        public Task<List<Product>> GetProductsByNameAsync(string name)
         {
             return _context.Products
                 .Where(p => p.Name!.Contains(name))

@@ -11,7 +11,7 @@ namespace Application.Intefraces.Repositories
     {
         Task<List<Product>> GetProductsByCategoryAsync(int categoryId);
         Task<List<Product>> GetProductsByPriceRangeAsync(decimal minPrice, decimal maxPrice);
-        Task<List<Product>> GetProductsByName(string name);
+        Task<List<Product>> GetProductsByNameAsync(string name);
 
     }
 }

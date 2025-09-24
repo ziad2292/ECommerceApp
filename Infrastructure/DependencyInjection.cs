@@ -28,6 +28,7 @@ namespace Infrastructure
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
 
             return services;
         }
