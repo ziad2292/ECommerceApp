@@ -29,6 +29,7 @@ namespace Infrastructure
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddScoped<IProductService, ProductService>();
 
             return services;
         }

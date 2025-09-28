@@ -31,7 +31,7 @@ namespace Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public Task<List<Product>> GetProductsByPriceRangeAsync(decimal minPrice, decimal maxPrice)
+        public Task<List<Product>> GetProductsByPriceRangeAsync(decimal? minPrice, decimal? maxPrice)
         {
             return _context.Products
                 .Where(p => p.Price >= minPrice && p.Price <= maxPrice)

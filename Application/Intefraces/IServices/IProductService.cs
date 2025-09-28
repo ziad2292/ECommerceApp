@@ -11,12 +11,13 @@ namespace Application.Intefraces.IServices
     public interface IProductService
     {
         Task<ApiResponse> GetAllProductsAsync();
-        Task<ApiResponse> GetProductByIdAsync(int productId);
-        Task<ApiResponse> CreateProductAsync(NewProductDto newProduct);
-        Task<ApiResponse> UpdateProductAsync(int productId, NewProductDto updatedProduct);
-        Task<ApiResponse> DeleteProductAsync(int productId);
+        Task<ApiResponse> GetProductByIdAsync(Guid productId);
+        Task<ApiResponse> CreateProductAsync(SetProductDto newProduct);
+        Task<ApiResponse> UpdateProductAsync(Guid productId, SetProductDto updatedProduct);
+        Task<ApiResponse> DeleteProductAsync(Guid productId);
         Task<ApiResponse> GetProductsByCategoryAsync(int categoryId);
-        Task<ApiResponse> SearchProductsAsync(string searchTerm);
-        Task<ApiResponse> GetProductsByPriceRange(decimal minPrice, decimal maxPrice);
+        Task<ApiResponse> SearchProductsByNameAsync(string searchTerm);
+        Task<ApiResponse> SearchProductsAsync(SearchFilterDto filter);
+        Task<ApiResponse> GetProductsByPriceRange(decimal? minPrice, decimal? maxPrice);
     }
 }

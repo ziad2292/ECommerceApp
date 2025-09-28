@@ -23,7 +23,7 @@ namespace Infrastructure.Services
             _currentUserService = currentUserService;
         }
 
-        public async Task<ApiResponse> CreateProductAsync(NewProductDto newProduct)
+        public async Task<ApiResponse> CreateProductAsync(SetProductDto newProduct)
         {
             Product product = new Product()
             {
@@ -47,7 +47,7 @@ namespace Infrastructure.Services
             };
         }
 
-        public async Task<ApiResponse> DeleteProductAsync(int productId)
+        public async Task<ApiResponse> DeleteProductAsync(Guid productId)
         {
             Product? product = await _unitOfWork.Products.GetByIdAsync(productId);
             if (product == null)
@@ -88,7 +88,7 @@ namespace Infrastructure.Services
             };
         }
 
-        public async Task<ApiResponse> GetProductByIdAsync(int productId)
+        public async Task<ApiResponse> GetProductByIdAsync(Guid productId)
         {
             var product = await _unitOfWork.Products.GetByIdAsync(productId);
 
@@ -129,8 +129,11 @@ namespace Infrastructure.Services
             };
         }
 
-        public async Task<ApiResponse> GetProductsByPriceRange(decimal minPrice, decimal maxPrice)
+        public async Task<ApiResponse> GetProductsByPriceRange(decimal? minPrice, decimal? maxPrice)
         {
+            minPrice ??= 0;
+            maxPrice ??= int.MaxValue;
+
             var products = await _unitOfWork.Products.GetProductsByPriceRangeAsync(minPrice, maxPrice);
 
             var productDtos = products.Select(p => new GetProductDto
@@ -151,7 +154,7 @@ namespace Infrastructure.Services
             };
         }
 
-        public async Task<ApiResponse> SearchProductsAsync(string searchTerm)
+        public async Task<ApiResponse> SearchProductsByNameAsync(string searchTerm)
         {
             var products = await _unitOfWork.Products.GetProductsByNameAsync(searchTerm);
 
@@ -174,7 +177,7 @@ namespace Infrastructure.Services
 
         }
 
-        public async Task<ApiResponse> UpdateProductAsync(int productId, NewProductDto updatedProduct)
+        public async Task<ApiResponse> UpdateProductAsync(Guid productId, SetProductDto updatedProduct)
         {
             Product? oldProduct = await _unitOfWork.Products.GetByIdAsync(productId);
             if (oldProduct == null)
@@ -199,6 +202,48 @@ namespace Infrastructure.Services
                 IsSuccess = true,
                 Message = "Product updated successfully"
             };
+        }
+
+        public async Task<ApiResponse> SearchProductsAsync(SearchFilterDto filter)
+        {
+            var allProducts = await _unitOfWork.Products.GetAllAsync();
+            var query = allProducts.AsQueryable();
+
+            if (!string.IsNullOrEmpty(filter.Name))
+            {
+                query = query.Where(p => p.Name!.Contains(filter.Name));
+            }
+
+            if (filter.CategoryId != null)
+            {
+                query = query.Where(p => p.CategoryId == filter.CategoryId);
+            }
+
+            if (filter.MinPrice != null && filter.MaxPrice != null)
+            {
+                query = query.Where(p => p.Price >= filter.MinPrice && p.Price <= filter.MaxPrice);
+            }
+
+            var products = query.ToList();
+
+            var productDtos = products.Select(p => new GetProductDto
+            {
+                Name = p.Name!,
+                Description = p.Description!,
+                Price = p.Price,
+                CategoryId = p.CategoryId,
+                Stock = p.Stock,
+                ImageUrl = p.ImageUrl
+            });
+
+            return new ApiResponse<IEnumerable<GetProductDto>>
+            {
+                IsSuccess = true,
+                Message = products.Any() ? "Products found" : "No products match the search filters",
+                Data = productDtos
+            };
+
+
         }
     }
 }
