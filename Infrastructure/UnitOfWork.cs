@@ -15,8 +15,10 @@ namespace Infrastructure
     internal class UnitOfWork(AppDbContext context) : IUnitOfWork
     {
         private IProductRepository? _productService;
+        private ICategoryRepository? _categoryService;
 
         public IProductRepository Products => _productService ??= new ProductRepository(context);
+        public ICategoryRepository Categories => _categoryService ??= new CategoryRepository(context);
 
         public async Task BeginTransactionAsync()
         {

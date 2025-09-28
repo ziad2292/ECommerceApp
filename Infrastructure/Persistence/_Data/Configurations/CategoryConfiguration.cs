@@ -18,6 +18,8 @@ namespace Infrastructure.Persistence._Data.Configurations
                 .IsRequired()
                 .HasMaxLength(50);
 
+            builder.HasIndex(c => c.Name).IsUnique();
+
             builder.HasData(
                 new Category { Id = 1, Name = "Electronics" },
                 new Category { Id = 2, Name = "Books" },

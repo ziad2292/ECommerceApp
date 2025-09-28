@@ -11,6 +11,7 @@ namespace Application.Intefraces._Common
     public interface IUnitOfWork
     {
         IProductRepository Products { get; }
+        ICategoryRepository Categories { get; }
 
         Task<int> CommitAsync();
         Task BeginTransactionAsync();

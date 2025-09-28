@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Application.Intefraces.Repositories;
+using Domain.Entities;
 using Infrastructure.Persistence._Data;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
-    internal class CategoryRepository : GenericRepository<Category>
+    public class CategoryRepository : GenericRepository<Category> , ICategoryRepository
     {
         public CategoryRepository(AppDbContext appDbContext) : base(appDbContext) {}
     }
