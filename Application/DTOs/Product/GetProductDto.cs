@@ -11,6 +11,7 @@ namespace Application.DTOs.Product
 {
     public class GetProductDto
     {
+        public required Guid Id { get; set; }
         public required string Name { get; set; }
 
         public required string Description { get; set; }

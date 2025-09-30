@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerceApp.Controllers
 {
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles = "Admin")]
     public class CategoryController : CustomControllerBase
     {
         private readonly ICategoryService _categoryService;
@@ -15,7 +15,7 @@ namespace ECommerceApp.Controllers
             _categoryService = categoryService;
         }
 
-        [HttpPost]
+        [HttpPost("add")]
         public async Task<IActionResult> AddCategory(string name)
         {
             var response = await _categoryService.AddCategory(name);
@@ -27,7 +27,7 @@ namespace ECommerceApp.Controllers
             };
         }
 
-        [HttpDelete]
+        [HttpDelete("delete")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
             var response = await _categoryService.DeleteCategory(id);
@@ -39,7 +39,7 @@ namespace ECommerceApp.Controllers
             };
         }
 
-        [HttpGet]
+        [HttpGet("get-all")]
         [AllowAnonymous]
         public async Task<IActionResult> GetAllCategories()
         {
@@ -48,9 +48,9 @@ namespace ECommerceApp.Controllers
             return Ok(response);
         }
 
-        [HttpGet]
+        [HttpGet("get/{id}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetCategory(int id)
+        public async Task<IActionResult> GetCategory([FromRoute] int id)
         {
             var response = await _categoryService.GetCategory(id);
 
@@ -61,8 +61,8 @@ namespace ECommerceApp.Controllers
             };
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateCategory(int id, string name)
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> UpdateCategory([FromRoute] int id, [FromQuery] string name)
         {
             var response = await _categoryService.UpdateCategory(id, name);
 

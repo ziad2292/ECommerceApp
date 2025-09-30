@@ -72,6 +72,7 @@ namespace Infrastructure.Services
 
             var productDtos = products.Select(p => new GetProductDto
             {
+                Id = p.Id,
                 Name = p.Name!,
                 Description = p.Description!,
                 ImageUrl = p.ImageUrl,
@@ -113,6 +114,7 @@ namespace Infrastructure.Services
 
             var productDtos = products.Select(p => new GetProductDto
             {
+                Id = p.Id,
                 Name = p.Name!,
                 Description = p.Description!,
                 ImageUrl = p.ImageUrl,
@@ -138,6 +140,7 @@ namespace Infrastructure.Services
 
             var productDtos = products.Select(p => new GetProductDto
             {
+                Id = p.Id,
                 Name = p.Name!,
                 Description = p.Description!,
                 ImageUrl = p.ImageUrl,
@@ -160,6 +163,7 @@ namespace Infrastructure.Services
 
             var productDtos = products.Select(p => new GetProductDto
             {
+                Id = p.Id,
                 Name = p.Name!,
                 Description = p.Description!,
                 ImageUrl = p.ImageUrl,
@@ -211,7 +215,7 @@ namespace Infrastructure.Services
 
             if (!string.IsNullOrEmpty(filter.Name))
             {
-                query = query.Where(p => p.Name!.Contains(filter.Name));
+                query = query.Where(p => p.Name!.ToLower().Contains(filter.Name.ToLower()));
             }
 
             if (filter.CategoryId != null)
@@ -228,6 +232,7 @@ namespace Infrastructure.Services
 
             var productDtos = products.Select(p => new GetProductDto
             {
+                Id = p.Id,
                 Name = p.Name!,
                 Description = p.Description!,
                 Price = p.Price,

@@ -15,10 +15,10 @@ namespace Application.DTOs.Product
 
         [Range(0, int.MaxValue)]
         [Precision(18, 2)]
-        public decimal? MinPrice { get; set; }
+        public decimal? MinPrice { get; set; } = 0;
         [Range(0, int.MaxValue)]
         [Precision(18, 2)]
 
-        public decimal? MaxPrice { get; set; }
+        public decimal? MaxPrice { get; set; } = int.MaxValue;
     }
 }
