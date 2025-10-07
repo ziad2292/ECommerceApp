@@ -16,9 +16,13 @@ namespace Infrastructure
     {
         private IProductRepository? _productService;
         private ICategoryRepository? _categoryService;
+        private IShoppingCartRepository? _cartRepository;
+        private IShoppingCartItemRepository? _itemRepository;
 
         public IProductRepository Products => _productService ??= new ProductRepository(context);
         public ICategoryRepository Categories => _categoryService ??= new CategoryRepository(context);
+        public IShoppingCartRepository ShoppingCarts => _cartRepository ??= new ShoppingCartRepository(context);
+        public IShoppingCartItemRepository ShoppingCartItems => _itemRepository ??= new ShoppingCartItemRepository(context);
 
         public async Task BeginTransactionAsync()
         {
