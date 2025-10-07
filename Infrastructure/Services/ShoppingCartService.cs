@@ -28,7 +28,7 @@ namespace Infrastructure.Services
             _currentUserService = currentUserService;
         }
 
-        public async Task<ApiResponse> AddShoppingCartItem(SetShoppingCartItem item)
+        public async Task<ApiResponse> AddShoppingCartItemAsync(SetShoppingCartItem item)
         {
             var validationResponse = await ValidateDto(item.ShoppingCartId, item.ProductId, item.Quantity);
 
@@ -52,7 +52,7 @@ namespace Infrastructure.Services
             };
         }
 
-        public async Task<ApiResponse> CreateShoppingCart(Guid userId)
+        public async Task<ApiResponse> CreateShoppingCartAsync(Guid userId)
         {
             var userExistResponse = _accountService.GetById(userId).Result;
             if (!userExistResponse.IsSuccess)
@@ -77,7 +77,7 @@ namespace Infrastructure.Services
 
         }
 
-        public async Task<ApiResponse> DeleteShoppingCartItem(Guid itemId)
+        public async Task<ApiResponse> DeleteShoppingCartItemAsync(Guid itemId)
         {
             var ShoppingCartItem = await _unitOfWork.ShoppingCartItems.GetByIdAsync(itemId);
 
@@ -98,7 +98,7 @@ namespace Infrastructure.Services
             };
         }
 
-        public async Task<ApiResponse> EmptyShoppingCart(Guid CartId)
+        public async Task<ApiResponse> EmptyShoppingCartAsync(Guid CartId)
         {
             var validationResponse = await ValidateDto(cartId: CartId);
             if (!validationResponse.IsSuccess)
@@ -113,7 +113,7 @@ namespace Infrastructure.Services
 
         }
 
-        public async Task<ApiResponse> GetShoppingCartByUserId(Guid? userId)
+        public async Task<ApiResponse> GetShoppingCartByUserIdAsync(Guid? userId)
         {
             Guid Id;
             if(userId == null)
@@ -151,7 +151,7 @@ namespace Infrastructure.Services
             };
         }
 
-        public async Task<ApiResponse> UpdateShoppingCartItemQuantity(Guid itemId, int quantity)
+        public async Task<ApiResponse> UpdateShoppingCartItemQuantityAsync(Guid itemId, int quantity)
         {
             var shoppingCartItem = await _unitOfWork.ShoppingCartItems.GetByIdAsync(itemId);
 

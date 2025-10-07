@@ -10,11 +10,11 @@ namespace Application.Intefraces.IServices
 {
     public interface IShoppingCartService
     {
-        Task<ApiResponse> CreateShoppingCart(Guid userId);
-        Task<ApiResponse> AddShoppingCartItem(SetShoppingCartItem item);
-        Task<ApiResponse> UpdateShoppingCartItemQuantity(Guid itemId, int quantity);
-        Task<ApiResponse> DeleteShoppingCartItem(Guid itemId);
-        Task<ApiResponse> GetShoppingCartByUserId(Guid? userId);
-        Task<ApiResponse> EmptyShoppingCart(Guid CartId);
+        Task<ApiResponse> CreateShoppingCartAsync(Guid userId);
+        Task<ApiResponse> AddShoppingCartItemAsync(SetShoppingCartItem item);
+        Task<ApiResponse> UpdateShoppingCartItemQuantityAsync(Guid itemId, int quantity);
+        Task<ApiResponse> DeleteShoppingCartItemAsync(Guid itemId);
+        Task<ApiResponse> GetShoppingCartByUserIdAsync(Guid? userId);
+        Task<ApiResponse> EmptyShoppingCartAsync(Guid CartId);
     }
 }

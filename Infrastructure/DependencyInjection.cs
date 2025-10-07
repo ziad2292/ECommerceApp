@@ -31,6 +31,7 @@ namespace Infrastructure
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICategoryService, CategoryService>();    
+            services.AddScoped<IShoppingCartService, ShoppingCartService>();
 
             return services;
         }

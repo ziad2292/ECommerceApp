@@ -24,13 +24,15 @@ namespace Infrastructure.Services
         private readonly RoleManager<Role> _roleManager;
         private readonly ITokenService _tokenService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IShoppingCartService _shoppingCartService;
 
-        public AuthService(UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<Role> roleManager, ITokenService tokenService, IHttpContextAccessor httpContextAccessor)
+        public AuthService(UserManager<User> userManager, SignInManager<User> signInManager, IShoppingCartService shoppingCartService, RoleManager<Role> roleManager, ITokenService tokenService, IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _tokenService = tokenService;
+            _shoppingCartService = shoppingCartService;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -140,6 +142,9 @@ namespace Infrastructure.Services
 
             //Assign Role to the user
             await _userManager.AddToRoleAsync(user, userType.ToString());
+
+            //Create user cart
+            await _shoppingCartService.CreateShoppingCartAsync(user.Id);
           
             return new ApiResponse
             {
