@@ -22,6 +22,9 @@ namespace Domain.IdentityEntities
         public DateTime? RefreshTokenExpiryTime { get; set; }
         public bool IsRevoked { get; set; } = false;
 
+        public Guid ShoppingCartId { get; set; }
+        public ShoppingCart? ShoppingCart { get; set; }
+
         [NotMapped]
         public int Age
         {
@@ -42,7 +45,7 @@ namespace Domain.IdentityEntities
 
         public ICollection<Payment> Payments { get; set; } = new HashSet<Payment>();
 
-        public ShoppingCart? ShoppingCart { get; set; }
+
 
     }
 }

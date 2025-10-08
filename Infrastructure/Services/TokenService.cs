@@ -42,6 +42,7 @@ namespace Infrastructure.Services
                 new Claim(JwtRegisteredClaimNames.Iat, new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64), //Issued At
                 new Claim(ClaimTypes.Email, user.Email!),
                 new Claim(ClaimTypes.Role, role),
+                new Claim("CartId", user.ShoppingCartId.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) //JWT Unique ID
             };
 

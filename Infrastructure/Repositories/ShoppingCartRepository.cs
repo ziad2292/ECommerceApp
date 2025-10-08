@@ -20,7 +20,7 @@ namespace Infrastructure.Repositories
 
         public async Task<ShoppingCart?> GetByUserIdAsync(Guid userId)
         {
-            return await _appDbContext.ShoppingCarts.FirstOrDefaultAsync(c => c.UserId == userId);
+            return await _appDbContext.ShoppingCarts.Include(c => c.Items).FirstOrDefaultAsync(c => c.UserId == userId);
         }
     }
 }

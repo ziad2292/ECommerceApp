@@ -1,6 +1,7 @@
 ﻿using Application.DTOs._Common;
 using Application.DTOs.Account;
 using Application.DTOs.ShoppingCart;
+using Application.DTOs.ShoppingCartDTOs;
 using Application.Intefraces._Common;
 using Application.Intefraces.IServices;
 using Application.Intefraces.Repositories;
@@ -30,26 +31,30 @@ namespace Infrastructure.Services
 
         public async Task<ApiResponse> AddShoppingCartItemAsync(SetShoppingCartItemDto item)
         {
-            var validationResponse = await ValidateDto(item.ShoppingCartId, item.ProductId, item.Quantity);
+                var validationResponse = await ValidateDto(item.ShoppingCartId, item.ProductId, item.Quantity);
 
-            if (!validationResponse.IsSuccess)
-                return validationResponse;
+                if (!validationResponse.IsValid)
+                    return new ApiResponse()
+                    {
+                        IsSuccess = false,
+                        Message = validationResponse.Message!
+                    };
 
-            ShoppingCartItem newItem = new ShoppingCartItem()
-            {
-                ProductId = item.ProductId,
-                ShoppingCartId = item.ShoppingCartId,
-                Quantity = item.Quantity,
-            };
+                ShoppingCartItem newItem = new ShoppingCartItem()
+                {
+                    ProductId = item.ProductId,
+                    ShoppingCartId = item.ShoppingCartId,
+                    Quantity = item.Quantity,
+                };
 
-            await _unitOfWork.ShoppingCartItems.AddAsync(newItem);
-            await _unitOfWork.CommitAsync();
+                await _unitOfWork.ShoppingCartItems.AddAsync(newItem);
+                await _unitOfWork.CommitAsync();
 
-            return new ApiResponse()
-            {
-                IsSuccess = true,
-                Message = "Item added successfully"
-            };
+                return new ApiResponse()
+                {
+                    IsSuccess = true,
+                    Message = "Item added successfully"
+                };
         }
 
         public async Task<ApiResponse> CreateShoppingCartAsync(Guid userId)
@@ -101,8 +106,12 @@ namespace Infrastructure.Services
         public async Task<ApiResponse> EmptyShoppingCartAsync(Guid CartId)
         {
             var validationResponse = await ValidateDto(cartId: CartId);
-            if (!validationResponse.IsSuccess)
-                return validationResponse;
+            if (!validationResponse.IsValid)
+                return new ApiResponse()
+                {
+                    IsSuccess = false,
+                    Message = validationResponse.Message!
+                };
 
             await _unitOfWork.ShoppingCartItems.EmptyShoppingCartAsync(CartId);
             return new ApiResponse()
@@ -134,6 +143,7 @@ namespace Infrastructure.Services
 
             ShoppingCart? cart = await _unitOfWork.ShoppingCarts.GetByUserIdAsync(Id);
 
+
             if (cart == null)
             {
                 return new ApiResponse()
@@ -143,11 +153,33 @@ namespace Infrastructure.Services
                 };
             }
 
-            return new ApiResponse<ShoppingCart>()
+            ICollection<GetShoppingCartItemDto> itemsDto = new HashSet<GetShoppingCartItemDto>();
+
+            foreach(ShoppingCartItem item in cart.Items)
+            {
+                GetShoppingCartItemDto newItem = new GetShoppingCartItemDto()
+                {
+                    Id = item.Id,
+                    ProductId = item.ProductId,
+                    ShoppingCartId = item.ShoppingCartId,
+                    Quantity = item.Quantity
+                };
+
+                itemsDto.Add(newItem);
+            }
+
+            ShoppingCartDto cartDto = new ShoppingCartDto()
+            {
+                Id = cart.Id,
+                Items = itemsDto,
+                UserId = cart.UserId
+            };
+
+            return new ApiResponse<ShoppingCartDto>()
             {
                 IsSuccess = true,
                 Message = "Shopping Cart returned succesfully",
-                Data = cart
+                Data = cartDto
             };
         }
 
@@ -163,8 +195,12 @@ namespace Infrastructure.Services
                 };
 
             var validationResponse = await ValidateDto(productId: shoppingCartItem!.ProductId, quantity: quantity);
-            if (!validationResponse.IsSuccess)
-                return validationResponse;
+            if (!validationResponse.IsValid)
+                return new ApiResponse()
+                {
+                    IsSuccess = false,
+                    Message = validationResponse.Message!
+                };
 
             shoppingCartItem.Quantity = quantity;
 
@@ -178,53 +214,41 @@ namespace Infrastructure.Services
             };
         }
 
-        public async Task<ApiResponse> ValidateDto(Guid? cartId = null, Guid? productId = null, int? quantity = null)
+        public async Task<ValidationResultDto> ValidateDto(Guid? cartId = null, Guid? productId = null, int? quantity = null)
         {
-            if(cartId != null)
+            var result = new ValidationResultDto { IsValid = false };
+
+            ShoppingCart? shoppingCart = null;
+            Product? product = null;
+
+            if (cartId != null)
             {
-                var shoppingCart = await _unitOfWork.ShoppingCarts.GetByIdAsync(cartId);
+                shoppingCart = await _unitOfWork.ShoppingCarts.GetByIdAsync(cartId);
                 if (shoppingCart == null)
-                    return new ApiResponse()
-                    {
-                        IsSuccess = false,
-                        Message = "Shopping Cart doesn't exists"
-                    };
+                    return new ValidationResultDto { Message = "Shopping Cart doesn't exist" };
             }
 
             if (productId != null)
             {
-                var product = await _unitOfWork.Products.GetByIdAsync(productId);
+                product = await _unitOfWork.Products.GetByIdAsync(productId);
                 if (product == null)
-                    return new ApiResponse
-                    {
-                        IsSuccess = false,
-                        Message = "Product doesn't exist"
-                    };
+                    return new ValidationResultDto { Message = "Product doesn't exist" };
 
                 if (quantity != null && (quantity > product.Stock || quantity < 0))
-                    return new ApiResponse()
-                    {
-                        IsSuccess = false,
-                        Message = "Product stock is insufficient"
-                    };
+                    return new ValidationResultDto { Message = "Product stock is insufficient" };
             }
 
-            
-            if(cartId != null && productId != null)
-                if (await _unitOfWork.ShoppingCartItems.ShoppingItemExistsAsync((Guid)cartId, (Guid)productId))
-                    return new ApiResponse()
-                    {
-                        IsSuccess = false,
-                        Message = "Item already added"
-                    };
-
-            
-
-            return new ApiResponse()
+            if (cartId != null && productId != null)
             {
-                IsSuccess = true,
-                Message = "Dto is validated"
-            };
+                if (await _unitOfWork.ShoppingCartItems.ShoppingItemExistsAsync((Guid)cartId, (Guid)productId))
+                    return new ValidationResultDto { Message = "Item already added" };
+            }
+
+            result.IsValid = true;
+            result.ShoppingCart = shoppingCart;
+            result.Product = product;
+            return result;
         }
+
     }
 }

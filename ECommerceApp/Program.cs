@@ -40,6 +40,8 @@ var jwtSettings = builder.Configuration
 if(jwtSettings != null) jwtSettings.Secret = secretKey;
 
 
+// Required to access HttpContext in services
+builder.Services.AddHttpContextAccessor();
 
 // Dependency Injection for Solution Layers
 builder.Services.AddInfrastructure(builder.Configuration);
