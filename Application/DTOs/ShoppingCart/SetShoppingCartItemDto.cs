@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Application.DTOs.ShoppingCart
 {
-    public class SetShoppingCartItem
+    public class SetShoppingCartItemDto
     {
         public required Guid ShoppingCartId { get; set; }
         public required Guid ProductId { get; set; }

@@ -28,7 +28,7 @@ namespace Infrastructure.Services
             _currentUserService = currentUserService;
         }
 
-        public async Task<ApiResponse> AddShoppingCartItemAsync(SetShoppingCartItem item)
+        public async Task<ApiResponse> AddShoppingCartItemAsync(SetShoppingCartItemDto item)
         {
             var validationResponse = await ValidateDto(item.ShoppingCartId, item.ProductId, item.Quantity);
 
@@ -113,7 +113,7 @@ namespace Infrastructure.Services
 
         }
 
-        public async Task<ApiResponse> GetShoppingCartByUserIdAsync(Guid? userId)
+        public async Task<ApiResponse> GetShoppingCartByUserIdAsync(Guid? userId = null)
         {
             Guid Id;
             if(userId == null)
@@ -201,7 +201,7 @@ namespace Infrastructure.Services
                         Message = "Product doesn't exist"
                     };
 
-                if (quantity != null && quantity > product.Stock)
+                if (quantity != null && (quantity > product.Stock || quantity < 0))
                     return new ApiResponse()
                     {
                         IsSuccess = false,
