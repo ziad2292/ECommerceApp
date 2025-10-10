@@ -1,8 +1,6 @@
 # 🛍️ E-Commerce Web Application
 
 [![.NET](https://img.shields.io/badge/.NET-8.0-purple?logo=dotnet)](https://dotnet.microsoft.com/)
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](#)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Database](https://img.shields.io/badge/Database-SQL%20Server-red?logo=microsoft-sql-server)](#)
 
 A full-stack **E-Commerce Web Application** built using **ASP.NET Core 8**, **Entity Framework Core**, and **SQL Server**.  
