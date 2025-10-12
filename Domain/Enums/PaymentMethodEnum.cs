@@ -8,6 +8,7 @@ namespace Domain.Enums
 {
     public enum PaymentMethodEnum
     {
-        Cash = 1
+        Cash = 1,
+        Visa = 2
     }
 }

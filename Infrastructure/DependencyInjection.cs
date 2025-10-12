@@ -1,8 +1,10 @@
 ﻿using Application.Intefraces._Common;
 using Application.Intefraces.Initializers;
 using Application.Intefraces.IServices;
+using Application.Intefraces.Repositories;
 using Infrastructure.Persistence._Data;
 using Infrastructure.Persistence.Initializers;
+using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -32,6 +34,8 @@ namespace Infrastructure
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICategoryService, CategoryService>();    
             services.AddScoped<IShoppingCartService, ShoppingCartService>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
 
             return services;
         }

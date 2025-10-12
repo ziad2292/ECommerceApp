@@ -14,6 +14,9 @@ namespace Application.Intefraces._Common
         ICategoryRepository Categories { get; }
         IShoppingCartRepository ShoppingCarts { get; }
         IShoppingCartItemRepository ShoppingCartItems { get; }
+        IOrderRepository Orders { get; }
+        IPaymentRepository Payments { get; }
+        IOrderItemRepository OrderItems { get; }
 
         Task<int> CommitAsync();
         Task BeginTransactionAsync();
