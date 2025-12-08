@@ -22,7 +22,6 @@ namespace Application.DTOs.Product
         [Url]
         public string? ImageUrl { get; set; }
 
-        //TODO: custom validation to check that category exists (do it in all the product dtos)
         public required int CategoryId { get; set; }
 
         [Range(0, int.MaxValue)]

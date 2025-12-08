@@ -1,19 +1,24 @@
 using Application.Settings;
 using Domain.IdentityEntities;
+using ECommerceApp;
 using ECommerceApp.Extensions;
+using ECommerceApp.Middlewares;
 using Infrastructure;
 using Infrastructure.Persistence._Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using StackExchange.Redis;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
-using Serilog;
+using Role = Domain.IdentityEntities.Role;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +29,15 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
+//Configure Rate Limit Settings
+builder.Services.Configure<RateLimitSettings>(builder.Configuration.GetSection("RateLimitSettings"));
 
+
+//Register in HTTP Logging
+builder.Services.AddHttpLogging(options =>
+{
+    options.LoggingFields = HttpLoggingFields.All;
+});
 
 //Serilog
 builder.Host.UseSerilog((HostBuilderContext context, IServiceProvider services, LoggerConfiguration loggerConfiguration)
@@ -55,8 +68,7 @@ if(jwtSettings != null) jwtSettings.Secret = secretKey;
 builder.Services.AddHttpContextAccessor();
 
 // Dependency Injection for Solution Layers
-builder.Services.AddInfrastructure(builder.Configuration);
-
+builder.Services.AddServices(builder.Configuration);
 
 
 //Enable Identity
@@ -140,6 +152,20 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+// Test Redis connection
+try
+{
+    var redis = app.Services.GetRequiredService<IConnectionMultiplexer>();
+    var db = redis.GetDatabase();
+    await db.PingAsync();
+    app.Logger.LogInformation("Redis connection successful");
+}
+catch (Exception ex)
+{
+    app.Logger.LogError(ex, "Failed to connect to Redis");
+    throw;
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -149,15 +175,18 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpLogging(); //Enable Http Logging
 
+
+
 app.UseHsts(); //Forces the browser to use HTTPS for all requests and responses
 app.UseHttpsRedirection();
+
 
 //Order matters
 app.UseRouting(); //Identifying action method based on route
 app.UseAuthentication(); //Enable Authentication Middleware
 app.UseAuthorization(); //Enable Authorization Middleware
 app.MapControllers(); //Execute the filter pipeline (action + filters)
-
+app.UseMiddleware<RateLimitMiddleware>(); // Apply Rate Limiting Middleware (Global)
 
 await app.InitializeDbAsync();
 

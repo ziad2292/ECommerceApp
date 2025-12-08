@@ -16,15 +16,24 @@ namespace Infrastructure.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
+        private readonly ICategoryService _categoryService;
 
-        public ProductService(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
+        public ProductService(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, ICategoryService categoryService)
         {
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
+            _categoryService = categoryService;
         }
 
         public async Task<ApiResponse> CreateProductAsync(SetProductDto newProduct)
         {
+            if (!await isCategory(newProduct.CategoryId))
+                return new ApiResponse()
+                {
+                    IsSuccess = false,
+                    Message = "Category doesn't exist"
+                };
+
             Product product = new Product()
             {
                 Name = newProduct.Name,
@@ -183,6 +192,13 @@ namespace Infrastructure.Services
 
         public async Task<ApiResponse> UpdateProductAsync(Guid productId, SetProductDto updatedProduct)
         {
+            if (!await isCategory(updatedProduct.CategoryId))
+                return new ApiResponse()
+                {
+                    IsSuccess = false,
+                    Message = "Category doesn't exist"
+                };
+
             Product? oldProduct = await _unitOfWork.Products.GetByIdAsync(productId);
             if (oldProduct == null)
                 return new ApiResponse()
@@ -249,6 +265,12 @@ namespace Infrastructure.Services
             };
 
 
+        }
+
+        public async Task<bool> isCategory(int CategoryId)
+        {
+            var result = await _categoryService.GetCategory(CategoryId);
+            return result.IsSuccess;
         }
     }
 }

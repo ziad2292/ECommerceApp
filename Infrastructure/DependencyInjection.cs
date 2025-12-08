@@ -21,21 +21,7 @@ namespace Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<AppDbContext>(optionsBuilder =>
-                optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
-            );
-
-            services.AddScoped<IDbInitializer, DBInitializer>();
-            services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped<ICurrentUserService, CurrentUserService>();
-            services.AddScoped<IProductService, ProductService>();
-            services.AddScoped<ICategoryService, CategoryService>();    
-            services.AddScoped<IShoppingCartService, ShoppingCartService>();
-            services.AddScoped<IOrderRepository, OrderRepository>();
-            services.AddScoped<IPaymentRepository, PaymentRepository>();
+            
 
             return services;
         }

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Infrastructure
 {
-    internal class UnitOfWork(AppDbContext context) : IUnitOfWork
+    public class UnitOfWork(AppDbContext context) : IUnitOfWork
     {
         private IProductRepository? _productService;
         private ICategoryRepository? _categoryService;
