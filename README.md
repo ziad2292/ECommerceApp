@@ -17,7 +17,9 @@ It provides a robust backend for user authentication, product management, shoppi
 - 🔁 **Transactional Safety** — Database operations are wrapped in transactions to ensure data integrity.  
 - 🧾 **Audit Tracking** — Every entity tracks creation and modification history (`CreatedAt`, `CreatedBy`, etc.).  
 - 💳 **Payment-Ready Design** — Structured for easy integration with gateways like **Paymob**, **Stripe**, or **Fawry**.  
-- 🧱 **Clean Architecture** — Modular design with **Repository**, **Unit of Work**, and **Service** layers.  
+- 🧱 **Clean Architecture** — Modular design with **Repository**, **Unit of Work**, and **Service** layers.
+- 🚦 **Rate Limiting (Redis-Backed)** — Implements distributed rate limiting using Redis Cache to prevent abusive or excessive requests.
+
 
 ---
 
