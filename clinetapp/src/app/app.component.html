@@ -1,0 +1,22 @@
+<header class="topbar">
+  <strong>E-Commerce Demo</strong>
+
+  @if (auth.isLoggedIn()) {
+    <nav>
+      <a routerLink="/home">Home</a>
+      <a routerLink="/products">Products</a>
+      <a routerLink="/cart">Shopping Cart</a>
+      <a routerLink="/orders">Orders</a>
+      <button type="button" class="secondary" (click)="logout()">Logout</button>
+    </nav>
+  } @else {
+    <nav>
+      <a routerLink="/login">Login</a>
+      <a routerLink="/register">Register</a>
+    </nav>
+  }
+</header>
+
+<main class="page">
+  <router-outlet />
+</main>
