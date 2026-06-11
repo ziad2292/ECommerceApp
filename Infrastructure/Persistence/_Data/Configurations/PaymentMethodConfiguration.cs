@@ -18,7 +18,8 @@ namespace Infrastructure.Persistence._Data.Configurations
                 .HasMaxLength(100);
 
             builder.HasData(
-                new PaymentMethod { Id = 1, Name = "Cash" }
+                new PaymentMethod { Id = 1, Name = "Cash" },
+                new PaymentMethod { Id = 2, Name = "Visa" }
             );
         }
     }

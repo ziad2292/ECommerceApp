@@ -1,20 +1,12 @@
-﻿using Application.DTOs._Common;
+using Application.DTOs._Common;
 using Application.DTOs.Account;
 using Application.DTOs.ShoppingCart;
 using Application.DTOs.ShoppingCartDTOs;
 using Application.Intefraces._Common;
 using Application.Intefraces.IServices;
-using Application.Intefraces.Repositories;
 using Domain.Entities;
-using Domain.IdentityEntities;
-using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Infrastructure.Services
+namespace Application.Services
 {
     public class ShoppingCartService : IShoppingCartService
     {
@@ -23,7 +15,7 @@ namespace Infrastructure.Services
         private readonly IAccountService _accountService;
 
         public ShoppingCartService(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IAccountService accountService)
-        {  
+        {
             _unitOfWork = unitOfWork;
             _accountService = accountService;
             _currentUserService = currentUserService;
@@ -31,39 +23,54 @@ namespace Infrastructure.Services
 
         public async Task<ApiResponse> AddShoppingCartItemAsync(SetShoppingCartItemDto item)
         {
-                var validationResponse = await ValidateDto(item.ShoppingCartId, item.ProductId, item.Quantity);
-
-                if (!validationResponse.IsValid)
-                    return new ApiResponse()
-                    {
-                        IsSuccess = false,
-                        Message = validationResponse.Message!
-                    };
-
-                ShoppingCartItem newItem = new ShoppingCartItem()
+            var cart = await GetCurrentUserCartAsync();
+            if (cart == null)
+                return new ApiResponse
                 {
-                    ProductId = item.ProductId,
-                    ShoppingCartId = item.ShoppingCartId,
-                    Quantity = item.Quantity,
+                    IsSuccess = false,
+                    Message = "Shopping Cart doesn't exist"
                 };
 
-                await _unitOfWork.ShoppingCartItems.AddAsync(newItem);
-                await _unitOfWork.CommitAsync();
-
-                return new ApiResponse()
+            var validationResponse = await ValidateDto(cart.Id, item.ProductId, item.Quantity);
+            if (!validationResponse.IsValid)
+                return new ApiResponse
                 {
-                    IsSuccess = true,
-                    Message = "Item added successfully"
+                    IsSuccess = false,
+                    Message = validationResponse.Message!
                 };
+
+            ShoppingCartItem newItem = new ShoppingCartItem
+            {
+                ProductId = item.ProductId,
+                ShoppingCartId = cart.Id,
+                Quantity = item.Quantity,
+            };
+
+            await _unitOfWork.ShoppingCartItems.AddAsync(newItem);
+            await _unitOfWork.CommitAsync();
+
+            return new ApiResponse
+            {
+                IsSuccess = true,
+                Message = "Item added successfully"
+            };
         }
 
         public async Task<ApiResponse> CreateShoppingCartAsync(Guid userId)
         {
-            var userExistResponse = _accountService.GetById(userId).Result;
+            var userExistResponse = await _accountService.GetById(userId);
             if (!userExistResponse.IsSuccess)
                 return userExistResponse;
 
-            ShoppingCart shoppingCart = new ShoppingCart()
+            var existingCart = await _unitOfWork.ShoppingCarts.GetByUserIdAsync(userId);
+            if (existingCart != null)
+                return new ApiResponse
+                {
+                    IsSuccess = true,
+                    Message = "Cart already exists"
+                };
+
+            ShoppingCart shoppingCart = new ShoppingCart
             {
                 UserId = userId,
                 CreatedAt = DateTime.UtcNow,
@@ -73,91 +80,95 @@ namespace Infrastructure.Services
             await _unitOfWork.ShoppingCarts.AddAsync(shoppingCart);
             await _unitOfWork.CommitAsync();
 
-            return new ApiResponse()
+            return new ApiResponse
             {
                 IsSuccess = true,
                 Message = "Cart created successfully"
             };
-
-
         }
 
         public async Task<ApiResponse> DeleteShoppingCartItemAsync(Guid itemId)
         {
-            var ShoppingCartItem = await _unitOfWork.ShoppingCartItems.GetByIdAsync(itemId);
+            var cart = await GetCurrentUserCartAsync();
+            if (cart == null)
+                return new ApiResponse
+                {
+                    IsSuccess = false,
+                    Message = "Shopping Cart doesn't exist"
+                };
 
-            if (ShoppingCartItem == null)
-                return new ApiResponse()
+            var shoppingCartItem = await _unitOfWork.ShoppingCartItems.GetByIdAsync(itemId);
+            if (shoppingCartItem == null || shoppingCartItem.ShoppingCartId != cart.Id)
+                return new ApiResponse
                 {
                     IsSuccess = false,
                     Message = "Shopping Item doesn't exist"
                 };
 
-            await _unitOfWork.ShoppingCartItems.DeleteAsync(ShoppingCartItem);
+            await _unitOfWork.ShoppingCartItems.DeleteAsync(shoppingCartItem);
             await _unitOfWork.CommitAsync();
 
-            return new ApiResponse()
+            return new ApiResponse
             {
                 IsSuccess = true,
                 Message = "Item deleted Succesfully"
             };
         }
 
-        public async Task<ApiResponse> EmptyShoppingCartAsync(Guid CartId)
+        public async Task<ApiResponse> EmptyShoppingCartAsync()
         {
-            var validationResponse = await ValidateDto(cartId: CartId);
-            if (!validationResponse.IsValid)
-                return new ApiResponse()
+            var cart = await GetCurrentUserCartAsync();
+            if (cart == null)
+                return new ApiResponse
                 {
                     IsSuccess = false,
-                    Message = validationResponse.Message!
+                    Message = "Shopping Cart doesn't exist"
                 };
 
-            await _unitOfWork.ShoppingCartItems.EmptyShoppingCartAsync(CartId);
-            return new ApiResponse()
+            await _unitOfWork.ShoppingCartItems.EmptyShoppingCartAsync(cart.Id);
+            await _unitOfWork.CommitAsync();
+
+            return new ApiResponse
             {
                 IsSuccess = true,
                 Message = "Cart Emptied Successfully"
             };
-
         }
 
         public async Task<ApiResponse> GetShoppingCartByUserIdAsync(Guid? userId = null)
         {
-            Guid Id;
-            if(userId == null)
+            Guid id;
+            if (userId == null)
             {
-                Guid.TryParse(_currentUserService.UserId, out Id);
+                if (!Guid.TryParse(_currentUserService.UserId, out id))
+                    return new ApiResponse
+                    {
+                        IsSuccess = false,
+                        Message = "User is not authenticated"
+                    };
             }
             else
             {
                 var userExistResponse = await _accountService.GetById((Guid)userId);
                 if (!userExistResponse.IsSuccess)
                     return userExistResponse;
-                else
-                {
-                    ApiResponse<UserDto> ResponseDto= (ApiResponse<UserDto>)userExistResponse;
-                    Id = ResponseDto.Data!.Id;
-                }
+
+                ApiResponse<UserDto> responseDto = (ApiResponse<UserDto>)userExistResponse;
+                id = responseDto.Data!.Id;
             }
 
-            ShoppingCart? cart = await _unitOfWork.ShoppingCarts.GetByUserIdAsync(Id);
-
-
+            ShoppingCart? cart = await _unitOfWork.ShoppingCarts.GetByUserIdAsync(id);
             if (cart == null)
-            {
-                return new ApiResponse()
+                return new ApiResponse
                 {
                     IsSuccess = false,
                     Message = "Shopping Cart doesn't exist"
                 };
-            }
 
             ICollection<GetShoppingCartItemDto> itemsDto = new HashSet<GetShoppingCartItemDto>();
-
-            foreach(ShoppingCartItem item in cart.Items)
+            foreach (ShoppingCartItem item in cart.Items)
             {
-                GetShoppingCartItemDto newItem = new GetShoppingCartItemDto()
+                GetShoppingCartItemDto newItem = new GetShoppingCartItemDto
                 {
                     Id = item.Id,
                     ProductId = item.ProductId,
@@ -168,14 +179,14 @@ namespace Infrastructure.Services
                 itemsDto.Add(newItem);
             }
 
-            ShoppingCartDto cartDto = new ShoppingCartDto()
+            ShoppingCartDto cartDto = new ShoppingCartDto
             {
                 Id = cart.Id,
                 Items = itemsDto,
                 UserId = cart.UserId
             };
 
-            return new ApiResponse<ShoppingCartDto>()
+            return new ApiResponse<ShoppingCartDto>
             {
                 IsSuccess = true,
                 Message = "Shopping Cart returned succesfully",
@@ -185,18 +196,25 @@ namespace Infrastructure.Services
 
         public async Task<ApiResponse> UpdateShoppingCartItemQuantityAsync(Guid itemId, int quantity)
         {
-            var shoppingCartItem = await _unitOfWork.ShoppingCartItems.GetByIdAsync(itemId);
+            var cart = await GetCurrentUserCartAsync();
+            if (cart == null)
+                return new ApiResponse
+                {
+                    IsSuccess = false,
+                    Message = "Shopping Cart doesn't exist"
+                };
 
-            if (shoppingCartItem == null)
-                new ApiResponse()
+            var shoppingCartItem = await _unitOfWork.ShoppingCartItems.GetByIdAsync(itemId);
+            if (shoppingCartItem == null || shoppingCartItem.ShoppingCartId != cart.Id)
+                return new ApiResponse
                 {
                     IsSuccess = false,
                     Message = "Shopping Cart Item doesn't exist"
                 };
 
-            var validationResponse = await ValidateDto(productId: shoppingCartItem!.ProductId, quantity: quantity);
+            var validationResponse = await ValidateDto(productId: shoppingCartItem.ProductId, quantity: quantity);
             if (!validationResponse.IsValid)
-                return new ApiResponse()
+                return new ApiResponse
                 {
                     IsSuccess = false,
                     Message = validationResponse.Message!
@@ -207,7 +225,7 @@ namespace Infrastructure.Services
             await _unitOfWork.ShoppingCartItems.UpdateAsync(shoppingCartItem);
             await _unitOfWork.CommitAsync();
 
-            return new ApiResponse()
+            return new ApiResponse
             {
                 IsSuccess = true,
                 Message = "Item updated successfully"
@@ -234,7 +252,7 @@ namespace Infrastructure.Services
                 if (product == null)
                     return new ValidationResultDto { Message = "Product doesn't exist" };
 
-                if (quantity != null && (quantity > product.Stock || quantity < 0))
+                if (quantity != null && (quantity > product.Stock || quantity < 1))
                     return new ValidationResultDto { Message = "Product stock is insufficient" };
             }
 
@@ -250,5 +268,12 @@ namespace Infrastructure.Services
             return result;
         }
 
+        private async Task<ShoppingCart?> GetCurrentUserCartAsync()
+        {
+            if (!Guid.TryParse(_currentUserService.UserId, out var userId))
+                return null;
+
+            return await _unitOfWork.ShoppingCarts.GetByUserIdAsync(userId);
+        }
     }
 }

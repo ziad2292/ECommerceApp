@@ -8,7 +8,7 @@ using Microsoft.VisualBasic;
 
 namespace ECommerceApp.Controllers
 {
-    [AllowAnonymous]
+    [Authorize]
     public class ShoppingCartController : CustomControllerBase
     {
         private readonly IShoppingCartService _shoppingCartService;
@@ -55,9 +55,9 @@ namespace ECommerceApp.Controllers
         }
 
         [HttpDelete("empty-cart")]
-        public async Task<IActionResult> EmptyCart(Guid cartId)
+        public async Task<IActionResult> EmptyCart()
         {
-            var response = await _shoppingCartService.EmptyShoppingCartAsync(cartId);
+            var response = await _shoppingCartService.EmptyShoppingCartAsync();
 
             return response.Message switch
             {

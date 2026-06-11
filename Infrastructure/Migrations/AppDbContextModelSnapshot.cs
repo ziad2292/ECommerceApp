@@ -315,6 +315,12 @@ namespace Infrastructure.Migrations
                             Id = 1,
                             IsDeleted = false,
                             Name = "Cash"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            IsDeleted = false,
+                            Name = "Visa"
                         });
                 });
 

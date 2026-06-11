@@ -1,9 +1,7 @@
 ﻿using Application.Intefraces._Common;
-using Application.Intefraces.IServices;
 using Application.Intefraces.Repositories;
 using Infrastructure.Persistence._Data;
 using Infrastructure.Repositories;
-using Infrastructure.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;

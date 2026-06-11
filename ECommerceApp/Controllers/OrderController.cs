@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerceApp.Controllers
 {
-    [AllowAnonymous]
+    [Authorize]
     public class OrderController : CustomControllerBase
     {
         private readonly IOrderService _orderService;

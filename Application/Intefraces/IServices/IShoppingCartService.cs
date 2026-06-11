@@ -15,6 +15,6 @@ namespace Application.Intefraces.IServices
         Task<ApiResponse> UpdateShoppingCartItemQuantityAsync(Guid itemId, int quantity);
         Task<ApiResponse> DeleteShoppingCartItemAsync(Guid itemId);
         Task<ApiResponse> GetShoppingCartByUserIdAsync(Guid? userId = null);
-        Task<ApiResponse> EmptyShoppingCartAsync(Guid CartId);
+        Task<ApiResponse> EmptyShoppingCartAsync();
     }
 }

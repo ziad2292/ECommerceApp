@@ -1,6 +1,5 @@
 ﻿using Application.DTOs.RateLimit;
 using Application.Intefraces.IServices;
-using Infrastructure.Services;
 using System.Net;
 
 namespace ECommerceApp.Middlewares

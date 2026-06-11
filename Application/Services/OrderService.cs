@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Services
+namespace Application.Services
 {
     public class OrderService : IOrderService
     {
@@ -49,6 +49,7 @@ namespace Infrastructure.Services
                 //Create Payment
                 Payment payment = new Payment()
                 {
+                    Id = Guid.NewGuid(),
                     Amount = 0,
                     PaymentDate = DateTime.UtcNow,
                     PaymentMethodId = (int)paymentMethod,
@@ -61,6 +62,7 @@ namespace Infrastructure.Services
                 //Create Order
                 Order order = new Order()
                 {
+                    Id = Guid.NewGuid(),
                     UserId = userId,
                     OrderDate = DateTime.UtcNow,
                     OrderStatusId = (int)OrderStatusEnum.Confirmed,
@@ -88,6 +90,7 @@ namespace Infrastructure.Services
 
                     OrderItem orderItem = new OrderItem()
                     {
+                        Id = Guid.NewGuid(),
                         OrderId = order.Id,
                         Price = price,
                         ProductId = product.Id,

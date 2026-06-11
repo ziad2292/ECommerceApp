@@ -21,6 +21,7 @@ using System.Text.Json.Serialization;
 using Role = Domain.IdentityEntities.Role;
 
 var builder = WebApplication.CreateBuilder(args);
+const string AngularDemoCorsPolicy = "AngularDemoCorsPolicy";
 
 // Add services to the container.
 builder.Services.AddControllers()
@@ -66,6 +67,16 @@ if(jwtSettings != null) jwtSettings.Secret = secretKey;
 
 // Required to access HttpContext in services
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(AngularDemoCorsPolicy, policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 // Dependency Injection for Solution Layers
 builder.Services.AddServices(builder.Configuration);
@@ -167,7 +178,7 @@ catch (Exception ex)
 }
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Docker"))
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -176,13 +187,16 @@ if (app.Environment.IsDevelopment())
 app.UseHttpLogging(); //Enable Http Logging
 
 
-
-app.UseHsts(); //Forces the browser to use HTTPS for all requests and responses
-app.UseHttpsRedirection();
+if (!app.Environment.IsEnvironment("Docker"))
+{
+    app.UseHsts(); //Forces the browser to use HTTPS for all requests and responses
+    app.UseHttpsRedirection();
+}
 
 
 //Order matters
 app.UseRouting(); //Identifying action method based on route
+app.UseCors(AngularDemoCorsPolicy);
 app.UseAuthentication(); //Enable Authentication Middleware
 app.UseAuthorization(); //Enable Authorization Middleware
 app.MapControllers(); //Execute the filter pipeline (action + filters)
